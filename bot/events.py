@@ -3,14 +3,6 @@ from discord.ext import commands
 
 from services.football_api import get_matches, FootballAPIError
 
-status_colors = {
-    "LIVE": discord.Color.red(),
-    "IN_PLAY": discord.Color.red(),
-    "PAUSED": discord.Color.orange(),
-    "FINISHED": discord.Color.dark_gray(),
-    "TIMED": discord.Color.blue(),
-    "SCHEDULED": discord.Color.blue(),
-}
 
 def build_match_embed(team_name: str, matches: list[dict]) -> discord.Embed:
     embed = discord.Embed(
