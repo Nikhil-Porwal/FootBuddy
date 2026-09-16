@@ -2,11 +2,14 @@ import discord
 from discord.ext import commands
 
 from config import settings
+from bot.events import register_events
 
 intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix=settings.command_prefix, intents=intents)
+
+register_events(bot)
 
 @bot.event
 async def on_ready():
