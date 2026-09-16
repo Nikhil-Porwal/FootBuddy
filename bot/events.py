@@ -25,8 +25,8 @@ def build_match_embed(team_name: str, matches: list[dict]) -> discord.Embed:
         utc_date = match["utcDate"]
 
         score = match.get("score", {}).get("fullTime", {})
-        home_score = score.get(home)
-        away_score = score.get(away)
+        home_score = score.get("home")
+        away_score = score.get("away")
 
         if home_score is not None and away_score is not None:
             score_str = f"{home_score} - {away_score}"

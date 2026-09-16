@@ -45,14 +45,13 @@ async def get_matches(team_name: str, limit: int = 5) -> list[dict]:
 
 if __name__ == "__main__":
     import asyncio
+    import json
 
     async def main():
-        matches = await get_matches("arsenal")
+        matches = await get_matches("chelsea")
         for m in matches:
-            home = m["homeTeam"]["name"]
-            away = m["awayTeam"]["name"]
-            status = m["status"]
-            print(f"{home} vs {away} — {status}")
+            if m["status"] == "FINISHED":
+                print(json.dumps(m, indent=2))
 
     asyncio.run(main())
     
