@@ -1,4 +1,5 @@
 import httpx
+from datetime import date, timedelta
 from config import settings
 
 BASE_URL = "https://api.football-data.org/v4"
@@ -16,23 +17,31 @@ TEAM_IDS = {
 class FootballAPIError(Exception):
     pass
 
-async def get_matches(team_name: str, limit: int = 5):
+async def get_matches(team_name: str, limit: int = 5) -> list[dict]:
     team_id = TEAM_IDS.get(team_name.lower())
     if team_id is None:
-        raise FootballAPIError(f"Unknown team: {team_name}")
+        raise FootballAPIError(f"Unknown team: '{team_name}'")
+
+    today = date.today()
+    params = {
+        "dateFrom": (today - timedelta(days=14)).isoformat(),
+        "dateTo": (today + timedelta(days=14)).isoformat(),
+    }
+
     url = f"{BASE_URL}/teams/{team_id}/matches"
-    params = {"limit": limit}
 
     async with httpx.AsyncClient() as client:
-        response =  await client.get(url, headers = HEADERS, params = params)
+        response = await client.get(url, headers=HEADERS, params=params)
 
     if response.status_code == 429:
-        raise FootballAPIError("Rate limit hit -- try again shortly.")
+        raise FootballAPIError("Rate limit hit — try again shortly")
     if response.status_code != 200:
-        raise FootballAPIError(f"API Error: {response.status_code} - {response.text}")
+        raise FootballAPIError(f"API error {response.status_code}: {response.text}")
 
     data = response.json()
-    return data.get("matches", [])
+    matches = data.get("matches", [])
+    matches.sort(key=lambda m: m["utcDate"])
+    return matches[:limit]
 
 if __name__ == "__main__":
     import asyncio
